@@ -15,11 +15,13 @@ const App = () => {
 
   const handleHome = () => {
     setScreen('upload');
-    setUploadedImage(null); // アップロードされた画像をリセット
+    setUploadedImage(null); // 저장된 이미지를 초기화함
   };
 
   return (
     <ChakraProvider>
+      
+      {/* Header와 UploadScreen, EditScreen을 렌더링하는 부분 */}
       <Box textAlign="center" fontSize="xl">
         <Header onHomeClick={handleHome} />
         {screen === 'upload' && <UploadScreen onSelectImage={handleSelectImage} />}

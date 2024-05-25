@@ -3,6 +3,8 @@ import { Flex, Button, Text } from '@chakra-ui/react';
 
 const Header = ({ onHomeClick }) => {
     return (
+
+        // Header 부분
         <Flex justifyContent="space-between" p={4} bg="#FDFFF9">
             <Text fontWeight="bold" cursor="pointer" onClick={onHomeClick} fontSize={28}>
                 웹 앱 이름
