@@ -31,7 +31,7 @@ const EditScreen = ({ uploadedImage }) => {
             {/*이미지 다운로드 버튼*/}
             <Box position="relative">
                 <Button colorScheme="green" onClick={handleDownload} position="absolute" right="25px" style={{ width: "150px", height: "30px" }}>
-                이미지 다운로드
+                    이미지 다운로드
                 </Button>
             </Box>
 
@@ -41,10 +41,10 @@ const EditScreen = ({ uploadedImage }) => {
 
             {/* 정리 전 이미지와 정리 후 이미지를 표시하는 부분 */}
             <Flex justify="space-between" h="77vh">
-                <Box bg="#FFFFFF" p={8} w="48%" borderRadius="xl"> {/* 정리 전 이미지를 배치하는 장소 */}
-                    {uploadedImage && <Image src={uploadedImage} alt="Uploaded" />}
+                <Box bg="#FFFFFF" p={8} w="48%" borderRadius="xl" display="flex" alignItems="center" justifyContent="center">
+                    {uploadedImage && <Image src={uploadedImage} alt="Uploaded" objectFit="contain" maxH="100%" maxW="100%" />}
                 </Box>
-                <Box bg="#FFFFFF" p={8} w="48%" borderRadius="xl"> {/* 정리 후 이미지를 배치하는 장소*/}
+                <Box bg="#FFFFFF" p={8} w="48%" borderRadius="xl" display="flex" alignItems="center" justifyContent="center">
                     {/* 여기서 백엔드에서 생성한 정리 후 가상 이미지 데이터를 취득하고 출력하는 형태가 될 것 같아요(아마) */}
                 </Box>
             </Flex>
