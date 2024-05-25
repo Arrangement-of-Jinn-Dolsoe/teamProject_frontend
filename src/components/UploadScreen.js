@@ -19,6 +19,11 @@ const UploadScreen = ({ onSelectImage }) => {
     return (
         <Box h="100vh" bg="#EEEEEE">
             <VStack spacing={8} pt={20} w="100%" h="100%" justify="center" align="center">
+                {/* 여기에 이 웹 앰의 사용 방벙을 표시 */}
+                <Box fontSize={35}>
+                    이 웹앱의 사용 방법을 설명하는 텍스트
+                </Box>
+
                 {/* 보튼을 클릭하면 파일 선택 화면이 나타남 */}
                 <input type="file" id="fileInput" style={{ display: 'none' }} onChange={handleFileChange} />
                 <label htmlFor="fileInput">
