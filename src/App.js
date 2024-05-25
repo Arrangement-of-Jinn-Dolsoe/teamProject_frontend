@@ -6,17 +6,24 @@ import EditScreen from './components/EditScreen';
 
 const App = () => {
   const [screen, setScreen] = useState('upload');
+  const [uploadedImage, setUploadedImage] = useState(null);
+
+  const handleSelectImage = (image) => {
+    setUploadedImage(image);
+    setScreen('edit');
+  };
 
   const handleHome = () => {
     setScreen('upload');
+    setUploadedImage(null); // アップロードされた画像をリセット
   };
 
   return (
     <ChakraProvider>
       <Box textAlign="center" fontSize="xl">
         <Header onHomeClick={handleHome} />
-        {screen === 'upload' && <UploadScreen onSelectImage={() => setScreen('edit')} />}
-        {screen === 'edit' && <EditScreen />}
+        {screen === 'upload' && <UploadScreen onSelectImage={handleSelectImage} />}
+        {screen === 'edit' && <EditScreen uploadedImage={uploadedImage} />}
       </Box>
     </ChakraProvider>
   );
