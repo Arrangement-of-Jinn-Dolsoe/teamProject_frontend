@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { VStack, Button, Box, Image } from '@chakra-ui/react';
+import { VStack, Button, Box, Image, useToast } from '@chakra-ui/react';
 
 const UploadScreen = ({ onSelectImage }) => {
     const [selectedImage, setSelectedImage] = useState(null);
+    const toast = useToast();
 
     const handleFileChange = (event) => {
         const file = event.target.files[0];
@@ -18,6 +19,13 @@ const UploadScreen = ({ onSelectImage }) => {
     const handleUpload = () => {
         if (selectedImage) {
             onSelectImage(selectedImage);
+        } else {
+            toast({
+                title: "이미지를 선택해주세요.",
+                status: "error",
+                duration: 2000,
+                isClosable: true,
+            });
         }
     };
 
@@ -34,13 +42,11 @@ const UploadScreen = ({ onSelectImage }) => {
                     </Button>
                 </label>
                 {selectedImage && (
-                    <>
-                        <Image src={selectedImage} alt="Selected" maxH="300px" objectFit="contain" />
-                        <Button colorScheme="green" style={{ width: "200px", height: "60px" }} fontSize={24} onClick={handleUpload}>
-                            업로드
-                        </Button>
-                    </>
+                    <Image src={selectedImage} alt="Selected" maxH="300px" objectFit="contain" />
                 )}
+                <Button colorScheme="green" style={{ width: "200px", height: "60px" }} fontSize={24} onClick={handleUpload}>
+                    업로드
+                </Button>
             </VStack>
         </Box>
     );
