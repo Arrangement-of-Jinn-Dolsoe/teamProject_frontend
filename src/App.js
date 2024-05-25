@@ -1,25 +1,25 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import { ChakraProvider, Box } from '@chakra-ui/react';
+import Header from './components/Header';
+import UploadScreen from './components/UploadScreen';
+import EditScreen from './components/EditScreen';
 
-function App() {
+const App = () => {
+  const [screen, setScreen] = useState('upload');
+
+  const handleHome = () => {
+    setScreen('upload');
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ChakraProvider>
+      <Box textAlign="center" fontSize="xl">
+        <Header onHomeClick={handleHome} />
+        {screen === 'upload' && <UploadScreen onSelectImage={() => setScreen('edit')} />}
+        {screen === 'edit' && <EditScreen />}
+      </Box>
+    </ChakraProvider>
   );
-}
+};
 
 export default App;
