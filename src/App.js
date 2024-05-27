@@ -3,6 +3,8 @@ import { ChakraProvider, Box } from '@chakra-ui/react';
 import Header from './components/Header';
 import UploadScreen from './components/UploadScreen';
 import EditScreen from './components/EditScreen';
+import SizeScreen from './components/SizeScreen';
+
 
 const App = () => {
   const [screen, setScreen] = useState('upload');
