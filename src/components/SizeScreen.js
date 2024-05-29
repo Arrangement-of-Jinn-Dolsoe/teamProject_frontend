@@ -1,25 +1,23 @@
-import { Button, Box, Flex, Image } from '@chakra-ui/react';
+import { Button, Box, Flex, Image, useToast } from '@chakra-ui/react';
 import React, { useState } from 'react';
 
-const sizeScreen = ({ onSelectSize }) => {
+const SizeScreen = ({ onSelectSize, selectedImage }) => {
     const [width, setWidth] = useState(0);
     const [height, setHeight] = useState(0);
-    const [selectedImage, setSelectedImage] = useState('');
+    const toast = useToast();
 
     const handleSizeChange = () => {
-        if (selectedImage) {
-            const img = new Image();
-            img.onload = () => {
-                setWidth(img.naturalWidth);
-                setHeight(img.naturalHeight);
-            };
-            img.src = selectedImage;
-        }
+        const img = document.createElement('img');
+        img.onload = () => {
+            setWidth(img.naturalWidth);
+            setHeight(img.naturalHeight);
+        };
+        img.src = selectedImage;
     };
 
     const handleUpload = () => {
         if (width && height) {
-            onSelectSize(selectedSize);
+            onSelectSize(width, height);
         } else {
             toast({
                 title: "이미지를 선택해주세요.",
@@ -34,10 +32,10 @@ const sizeScreen = ({ onSelectSize }) => {
         <Box>
             <Flex>
                 <Image src={selectedImage} alt="Selected" maxH="300px" objectFit="contain" />
-                <Button onclick={handleSizeChange}>
+                <Button onClick={handleSizeChange}>
                     크기 변경
                 </Button>
-                <Button onclick={handleUpload}>
+                <Button onClick={handleUpload}>
                     완료
                 </Button>
             </Flex>
@@ -45,4 +43,4 @@ const sizeScreen = ({ onSelectSize }) => {
     )
 }
 
-export default sizeScreen
+export default SizeScreen
