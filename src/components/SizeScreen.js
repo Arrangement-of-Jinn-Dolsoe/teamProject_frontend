@@ -1,101 +1,106 @@
-import { Button, Box, Image } from '@chakra-ui/react';
-// useToastを一時的に消した
+import { Button, Box, Image, Text, VStack } from '@chakra-ui/react';
 import React, { useState, useRef } from 'react';
 import setCanvasPreview from "../setCanvasPreview";
-import ReactCrop, { centerCrop, convertToPixelCrop, makeAspectCrop, } from "react-image-crop";
+import ReactCrop, { centerCrop, convertToPixelCrop, makeAspectCrop } from "react-image-crop";
+import 'react-image-crop/dist/ReactCrop.css';
 
-const ASPECT_RATIO = 1;
 const MIN_DIMENSION = 150;
 
-// onSelectSizeをproposとして受け取るの一旦消した
-const SizeScreen = ({ selectedImage }) => {
-    // const [width, setWidth] = useState(0);
-    // const [height, setHeight] = useState(0);
-    // const toast = useToast();
+const SizeScreen = ({ selectedImage, onCropComplete }) => {
     const imgRef = useRef(null);
     const previewCanvasRef = useRef(null);
     const [crop, setCrop] = useState();
+    const [cropDetails, setCropDetails] = useState(null);
 
     const onImageLoad = (e) => {
         const { width, height } = e.currentTarget;
         const cropWidthInPercent = (MIN_DIMENSION / width) * 100;
-        const crop = makeAspectCrop(
+        const initialCrop = makeAspectCrop(
             {
                 unit: "%",
                 width: cropWidthInPercent,
             },
-            ASPECT_RATIO,
             width,
             height
         );
-        const centeredCrop = centerCrop(crop, width, height);
+        const centeredCrop = centerCrop(initialCrop, width, height);
         setCrop(centeredCrop);
     };
 
-    // const handleSizeChange = () => {
-    //     const img = document.createElement('img');
-    //     img.onload = () => {
-    //         setWidth(img.naturalWidth);
-    //         setHeight(img.naturalHeight);
-    //     };
-    //     img.src = selectedImage;
-    // };
+    const completeCrop = () => {
+        if (imgRef.current && previewCanvasRef.current && crop) {
+            const pixelCrop = convertToPixelCrop(crop, imgRef.current.naturalWidth, imgRef.current.naturalHeight);
+            setCanvasPreview(imgRef.current, previewCanvasRef.current, pixelCrop);
+            const canvas = previewCanvasRef.current;
+            canvas.toBlob(blob => {
+                const url = URL.createObjectURL(blob);
+                onCropComplete(url);
+            }, 'image/png');
 
-    // const handleUpload = () => {
-    //     if (width && height) {
-    //         onSelectSize(width, height);
-    //     } else {
-    //         toast({
-    //             title: "이미지를 선택해주세요.",
-    //             status: "error",
-    //             duration: 2000,
-    //             isClosable: true,
-    //         });
-    //     }
-    // };
+            const cropWidth = Math.round(pixelCrop.width);
+            const cropHeight = Math.round(pixelCrop.height);
+            const cropX = Math.round(pixelCrop.x);
+            const cropY = Math.round(pixelCrop.y);
+            const imgWidth = imgRef.current.naturalWidth;
+            const imgHeight = imgRef.current.naturalHeight;
+
+            setCropDetails({
+                width: cropWidth,
+                height: cropHeight,
+                coordinates: [
+                    { label: "왼쪽 상단", x: cropX, y: cropY },
+                    { label: "오른쪽 상단", x: cropX + cropWidth, y: cropY },
+                    { label: "왼쪽 하단", x: cropX, y: cropY + cropHeight },
+                    { label: "오른쪽 하단", x: cropX + cropWidth, y: cropY + cropHeight }
+                ],
+                imgSize: `${imgWidth}x${imgHeight}`
+            });
+        }
+    };
 
     return (
         <Box p={4} h="100vh" bg="#EEEEEE">
-            <Box h="77vh" w="50%">
-                {/* <Image src={selectedImage} alt="Selected" maxH="300px" objectFit="contain" /> */}
-
+            <Box h="77vh" w="50%" float="left">
                 <ReactCrop
                     crop={crop}
-                    onChange={(pixelCrop, percentCrop) => setCrop(percentCrop)}
-                    circularCrop
+                    onChange={(newCrop) => setCrop(newCrop)}
                     keepSelection
-                    aspect={ASPECT_RATIO}
                     minWidth={MIN_DIMENSION}
                 >
                     <Box bg="#FFFFFF" p={8} w="100%" borderRadius="xl" alignItems="center" justifyContent="center">
-                        <Image src={selectedImage} ref={imgRef} alt="Uploaded" objectFit="contain" maxH="100%" maxW="100%" justifyContent="center"
-                            onLoad={onImageLoad} />
+                        <Image
+                            src={selectedImage}
+                            ref={imgRef}
+                            alt="Uploaded"
+                            objectFit="contain"
+                            maxH="100%"
+                            maxW="100%"
+                            onLoad={onImageLoad}
+                        />
                     </Box>
                 </ReactCrop>
 
-                <Button
-                    onClick={() => {
-                        setCanvasPreview(
-                            imgRef.current,
-                            previewCanvasRef.current,
-                            convertToPixelCrop(
-                                crop,
-                                imgRef.current.Width,
-                                imgRef.current.Height
-                            )
-                        );
-                    }}
-                // onClick={handleSizeChange}
-                >
-                    トリミング完了
+                <Button onClick={completeCrop} mt={4}>
+                    선반 사이즈 재기
                 </Button>
+                <Box as="canvas" ref={previewCanvasRef} mt={4} border="1px solid black" width={200} height={200} display="block" mx="auto"/>
             </Box>
-            {crop && (
-                <Box as="canvas" ref={previewCanvasRef} mt={4} border="1px solid black" objectFit="contain" width={150} height={150}/>
+            {cropDetails && (
+                <Box float="right" width="45%" p={4} bg="#FFFFFF" borderRadius="xl">
+                    <VStack align="start" spacing={4}>
+                        <Text fontSize="xl">Crop한 정보:</Text>
+                        <Text>픽셀: {cropDetails.width}x{cropDetails.height} </Text>
+                        {cropDetails.coordinates.map((coord, index) => (
+                            <Text key={index}>
+                                {coord.label}: ({coord.x}, {coord.y})
+                            </Text>
+                        ))}
+                        <Text>원본 이미지 사이즈: {cropDetails.imgSize}</Text>
+                    </VStack>
+                </Box>
             )}
         </Box>
-
-    )
+    );
 }
 
-export default SizeScreen
+export default SizeScreen;
