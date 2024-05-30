@@ -6,11 +6,18 @@ import 'react-image-crop/dist/ReactCrop.css';
 
 const MIN_DIMENSION = 150;
 
+const ImageGet = () => {
+    return [
+        "/images/20240502_142118.jpg",
+        "/images/IMG_1271.jpg",
+        "/images/IMG_1272.jpg"
+    ];
+};
+
 const SizeScreen = ({ selectedImage, onCropComplete }) => {
     const imgRef = useRef(null);
     const previewCanvasRef = useRef(null);
     const [crop, setCrop] = useState();
-    const [cropDetails, setCropDetails] = useState(null);
 
     const onImageLoad = (e) => {
         const { width, height } = e.currentTarget;
@@ -34,30 +41,9 @@ const SizeScreen = ({ selectedImage, onCropComplete }) => {
             const canvas = previewCanvasRef.current;
             canvas.toBlob(blob => {
                 const url = URL.createObjectURL(blob);
-                onCropComplete(url);
+                const images = ImageGet();
+                onCropComplete(url, images);
             }, 'image/png');
-
-            const cropWidth = Math.round(pixelCrop.width);
-            const cropHeight = Math.round(pixelCrop.height);
-            const cropX = Math.round(pixelCrop.x);
-            const cropY = Math.round(pixelCrop.y);
-            const imgWidth = imgRef.current.naturalWidth;
-            const imgHeight = imgRef.current.naturalHeight;
-
-            // 左上の座標 (x1, y1)
-            const x1 = cropX;
-            const y1 = cropY;
-
-            // 右下の座標 (x2, y2)
-            const x2 = cropX + cropWidth;
-            const y2 = cropY + cropHeight;
-
-            setCropDetails({
-                width: cropWidth,
-                height: cropHeight,
-                coordinates: [x1, y1, x2, y2],
-                imgSize: `${imgWidth}x${imgHeight}`
-            });
         }
     };
 
@@ -88,16 +74,6 @@ const SizeScreen = ({ selectedImage, onCropComplete }) => {
                 </Button>
                 <Box as="canvas" ref={previewCanvasRef} mt={4} border="1px solid black" width={200} height={200} display="block" mx="auto"/>
             </Box>
-            {cropDetails && (
-                <Box float="right" width="45%" p={4} bg="#FFFFFF" borderRadius="xl">
-                    <VStack align="start" spacing={4}>
-                        <Text fontSize="xl">Cropした情報:</Text>
-                        <Text>ピクセル: {cropDetails.width}x{cropDetails.height} </Text>
-                        <Text>座標: [{cropDetails.coordinates.join(", ")}]</Text>
-                        <Text>元画像サイズ: {cropDetails.imgSize}</Text>
-                    </VStack>
-                </Box>
-            )}
         </Box>
     );
 }
