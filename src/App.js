@@ -5,7 +5,7 @@ import UploadScreen from './components/UploadScreen';
 import EditScreen from './components/EditScreen';
 import SizeScreen from './components/SizeScreen';
 import SelectObjectScreen from './components/SelectObjectScreen';
-
+import 'react-image-crop/dist/ReactCrop.css'
 
 const App = () => {
   const [screen, setScreen] = useState('upload');
