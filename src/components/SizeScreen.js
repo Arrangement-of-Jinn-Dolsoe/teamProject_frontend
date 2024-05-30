@@ -44,15 +44,18 @@ const SizeScreen = ({ selectedImage, onCropComplete }) => {
             const imgWidth = imgRef.current.naturalWidth;
             const imgHeight = imgRef.current.naturalHeight;
 
-            
+            // 左上の座標 (x1, y1)
+            const x1 = cropX;
+            const y1 = cropY;
+
+            // 右下の座標 (x2, y2)
+            const x2 = cropX + cropWidth;
+            const y2 = cropY + cropHeight;
 
             setCropDetails({
                 width: cropWidth,
                 height: cropHeight,
-                coordinates: [
-                    { label: "왼쪽 상단", x: cropX, y: cropY },
-                    { label: "오른쪽 하단", x: cropX + cropWidth, y: cropY + cropHeight }
-                ],
+                coordinates: [x1, y1, x2, y2],
                 imgSize: `${imgWidth}x${imgHeight}`
             });
         }
@@ -81,21 +84,17 @@ const SizeScreen = ({ selectedImage, onCropComplete }) => {
                 </ReactCrop>
 
                 <Button onClick={completeCrop} mt={4}>
-                    선반 사이즈 재기
+                    トリミング完了
                 </Button>
                 <Box as="canvas" ref={previewCanvasRef} mt={4} border="1px solid black" width={200} height={200} display="block" mx="auto"/>
             </Box>
             {cropDetails && (
                 <Box float="right" width="45%" p={4} bg="#FFFFFF" borderRadius="xl">
                     <VStack align="start" spacing={4}>
-                        <Text fontSize="xl">Crop한 정보:</Text>
-                        <Text>픽셀: {cropDetails.width}x{cropDetails.height} </Text>
-                        {cropDetails.coordinates.map((coord, index) => (
-                            <Text key={index}>
-                                {coord.label}: ({coord.x}, {coord.y})
-                            </Text>
-                        ))}
-                        <Text>원본 이미지 사이즈: {cropDetails.imgSize}</Text>
+                        <Text fontSize="xl">Cropした情報:</Text>
+                        <Text>ピクセル: {cropDetails.width}x{cropDetails.height} </Text>
+                        <Text>座標: [{cropDetails.coordinates.join(", ")}]</Text>
+                        <Text>元画像サイズ: {cropDetails.imgSize}</Text>
                     </VStack>
                 </Box>
             )}

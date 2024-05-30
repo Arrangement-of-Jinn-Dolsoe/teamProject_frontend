@@ -31,7 +31,7 @@ const App = () => {
 
   const handleCropComplete = (croppedImageUrl) => {
     setCroppedImage(croppedImageUrl);
-    setScreen('size');
+    setScreen('selectObject');
   };
 
   const handleHome = () => {
