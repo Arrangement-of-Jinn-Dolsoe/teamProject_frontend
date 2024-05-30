@@ -44,13 +44,13 @@ const SizeScreen = ({ selectedImage, onCropComplete }) => {
             const imgWidth = imgRef.current.naturalWidth;
             const imgHeight = imgRef.current.naturalHeight;
 
+            
+
             setCropDetails({
                 width: cropWidth,
                 height: cropHeight,
                 coordinates: [
                     { label: "왼쪽 상단", x: cropX, y: cropY },
-                    { label: "오른쪽 상단", x: cropX + cropWidth, y: cropY },
-                    { label: "왼쪽 하단", x: cropX, y: cropY + cropHeight },
                     { label: "오른쪽 하단", x: cropX + cropWidth, y: cropY + cropHeight }
                 ],
                 imgSize: `${imgWidth}x${imgHeight}`
