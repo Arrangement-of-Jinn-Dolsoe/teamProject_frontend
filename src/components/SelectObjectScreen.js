@@ -1,56 +1,68 @@
-import React, { useState } from 'react'
-import { Box, Button, Flex, useToast, Image } from '@chakra-ui/react'
+import React, { useState, useEffect } from 'react';
+import { Box, Button, Flex, Image } from '@chakra-ui/react';
 
-const SelectObjectScreen = ({onSelectObject, selectedImage}) => {
-    const [objectArray, setObjectArray] = useState([selectedImage]); //일시적으로 selectedImage를 넣어놓음
-    const toast = useToast();
+const SelectObjectScreen = ({ selectedImages, onSelectObject }) => {
+    const [selectingList, setSelectingList] = useState([]);
+    const [excludedList, setExcludedList] = useState([]);
 
+    useEffect(() => {
+        setSelectingList(selectedImages);
+    }, [selectedImages]);
 
+    const handleSelectImage = (index) => {
+        const selectedImage = selectingList[index];
+        setSelectingList(selectingList.filter((_, i) => i !== index));
+        setExcludedList([...excludedList, selectedImage]);
+    };
 
+    const handleExcludeImage = (index) => {
+        const excludedImage = excludedList[index];
+        setExcludedList(excludedList.filter((_, i) => i !== index));
+        setSelectingList([...selectingList, excludedImage]);
+    };
 
-    // 백엔드에서 받아온 오브젝트를 선택하는 함수
-    // const handleSelectObject = () => {
+    const handlOrganization = () => {
 
-    // }
-
-
-    const handleUpload = () => {
-        if (objectArray.length > 0) {
-            onSelectObject(objectArray);
-        } else {
-            toast({
-                title: "오브젝트를 선택해주세요.",
-                status: "error",
-                duration: 2000,
-                isClosable: true,
-            });
-        }
+        onSelectObject(selectingList); // コメントアウト
     }
-
-    const ImageList = () => {
-        return (
-            <Box>
-                {objectArray.map((object, index) => (
-                    <Image key={index} src={object} alt={`object ${index}`} maxH="300px" objectFit="contain" />
-                ))}
-            </Box>
-        )
-    }
-
 
     return (
         <Box>
-            <Flex>
-                <ImageList object={objectArray} />
-            </Flex>
-            <Button>
-                빼기
-            </Button>
-            <Button onClick={handleUpload}>
-                생성
-            </Button>
+            <Box>
+                <Box fontWeight="bold" p={2}>選択中</Box>
+                <Flex>
+                    {selectingList.map((image, index) => (
+                        <Image
+                            key={index}
+                            src={image}
+                            alt={`Selected ${index}`}
+                            onClick={() => handleSelectImage(index)}
+                            boxSize="150px"
+                            m={2}
+                            cursor="pointer"
+                        />
+                    ))}
+                </Flex>
+            </Box>
+            <Box mt={4}>
+                <Box fontWeight="bold" p={2}>除外</Box>
+                <Flex>
+                    {excludedList.map((image, index) => (
+                        <Image
+                            key={index}
+                            src={image}
+                            alt={`Excluded ${index}`}
+                            onClick={() => handleExcludeImage(index)}
+                            boxSize="150px"
+                            m={2}
+                            cursor="pointer"
+                        />
+                    ))}
+                </Flex>
+            </Box>
+            <Button mt={4} onClick={handlOrganization}>決定</Button>
         </Box>
-    )
-}
+    );
+};
 
-export default SelectObjectScreen
+export default SelectObjectScreen;
