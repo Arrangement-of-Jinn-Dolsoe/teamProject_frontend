@@ -1,4 +1,4 @@
-import { Button, Box, Image, } from '@chakra-ui/react';
+import { Button, Box, Image, VStack, Text,  } from '@chakra-ui/react';
 import React, { useState, useRef } from 'react';
 import setCanvasPreview from "../setCanvasPreview";
 import ReactCrop, { centerCrop, convertToPixelCrop, makeAspectCrop } from "react-image-crop";
@@ -18,6 +18,7 @@ const SizeScreen = ({ selectedImage, onCropComplete }) => {
     const imgRef = useRef(null);
     const previewCanvasRef = useRef(null);
     const [crop, setCrop] = useState();
+    const [cropDetails, setCropDetails] = useState(null);
 
     const onImageLoad = (e) => {
         const { width, height } = e.currentTarget;
@@ -44,6 +45,29 @@ const SizeScreen = ({ selectedImage, onCropComplete }) => {
                 const images = ImageGet();
                 onCropComplete(url, images);
             }, 'image/png');
+
+            const cropWidth = Math.round(pixelCrop.width);
+            const cropHeight = Math.round(pixelCrop.height);
+            const cropX = Math.round(pixelCrop.x);
+            const cropY = Math.round(pixelCrop.y);
+            const imgWidth = imgRef.current.naturalWidth;
+            const imgHeight = imgRef.current.naturalHeight;
+
+
+            // 왼쪽 상단 (x1, y1)
+            const x1 = cropX;
+            const y1 = cropY;
+
+            // 오른쪽 하단 (x2, y2)
+            const x2 = cropX + cropWidth;
+            const y2 = cropY + cropHeight;
+
+            setCropDetails({
+                width: cropWidth,
+                height: cropHeight,
+                coordinates: [x1, y1, x2, y2],
+                imgSize: `${imgWidth}x${imgHeight}`
+            });
         }
     };
 
@@ -70,10 +94,20 @@ const SizeScreen = ({ selectedImage, onCropComplete }) => {
                 </ReactCrop>
 
                 <Button onClick={completeCrop} mt={4}>
-                    トリミング完了
+                    사이즈 재기 완료
                 </Button>
-                <Box as="canvas" ref={previewCanvasRef} mt={4} border="1px solid black" width={200} height={200} display="block" mx="auto"/>
+                <Box as="canvas" ref={previewCanvasRef} mt={4} border="1px solid black" width={200} height={200} display="block" mx="auto" />
             </Box>
+            {cropDetails && (
+                <Box float="right" width="45%" p={4} bg="#FFFFFF" borderRadius="xl">
+                    <VStack align="start" spacing={4}>
+                    <Text fontSize="xl">Crop한 정보:</Text>
+                        <Text>픽셀: {cropDetails.width}x{cropDetails.height} </Text>
+                        <Text>자표: [{cropDetails.coordinates.join(", ")}]</Text>
+                        <Text>원본 이미지 사이즈: {cropDetails.imgSize}</Text>
+                    </VStack>
+                    </Box>
+            )}
         </Box>
     );
 }
