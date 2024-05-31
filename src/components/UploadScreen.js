@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { VStack, Button, Box, Image, useToast, Flex } from '@chakra-ui/react';
+import axios from 'axios';
 
 const UploadScreen = ({ onSelectImage }) => {
     const [selectedImage, setSelectedImage] = useState(null);
@@ -17,9 +18,36 @@ const UploadScreen = ({ onSelectImage }) => {
         }
     };
 
-    const handleUpload = () => {
-        if (selectedImage) {
-            onSelectImage(selectedImage);
+    const handleUpload = async () => {
+        const fileInput = document.getElementById('fileInput');
+        if (fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await axios.post('http://127.0.0.1:5000/upload', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
+                toast({
+                    title: "파일 업로드 성공!",
+                    status: "success",
+                    duration: 2000,
+                    isClosable: true,
+                });
+                onSelectImage(selectedImage);
+                console.log('File uploaded successfully', response.data);
+            } catch (error) {
+                console.error('Error uploading file', error);
+                toast({
+                    title: "파일 업로드 실패.",
+                    status: "error",
+                    duration: 2000,
+                    isClosable: true,
+                });
+            }
         } else {
             toast({
                 title: "이미지를 선택해주세요.",
@@ -33,7 +61,7 @@ const UploadScreen = ({ onSelectImage }) => {
     return (
         <Box h="100vh" bg="#EEEEEE">
             <VStack spacing={8} pt={20} w="100%" h="100%" align="center">
-                {/* 여기에 이 웹 앰의 사용 방벙을 표시 */}
+                {/* 여기에 이 웹앱의 사용 방식을 표시 */}
                 <Box w="95%" h="40%" fontSize={35}>
                     이 웹앱의 사용 방법을 설명하는 텍스트
                 </Box>
@@ -42,7 +70,7 @@ const UploadScreen = ({ onSelectImage }) => {
                     <Flex justify="space-between" w="100%">
                         <Box bg="#EEEEEE">
                             <VStack>
-                                {/*  보튼을 클릭하면 파일 선택 화면이 나타남 */}
+                                {/* 버튼을 클릭하면 파일 선택 화면이 나타남 */}
                                 <input type="file" id="fileInput" style={{ display: 'none' }} onChange={handleFileChange} />
                                 <label htmlFor="fileInput">
                                     <Button m={15} colorScheme="green" style={{ width: "200px", height: "60px" }} fontSize={24} as="span">
