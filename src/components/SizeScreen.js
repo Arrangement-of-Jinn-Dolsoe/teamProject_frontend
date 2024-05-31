@@ -1,24 +1,28 @@
 import { Button, Box, Image, VStack, Text,  } from '@chakra-ui/react';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import setCanvasPreview from "../setCanvasPreview";
 import ReactCrop, { centerCrop, convertToPixelCrop, makeAspectCrop } from "react-image-crop";
 import 'react-image-crop/dist/ReactCrop.css';
 
 const MIN_DIMENSION = 150;
 
-const ImageGet = () => {
-    return [
-        "/images/20240502_142118.jpg",
-        "/images/IMG_1271.jpg",
-        "/images/IMG_1272.jpg"
-    ];
-};
+useEffect(() => {
+    // 백엔드에서 이미지 데이터 배열을 가져옴
+    axios.get('http://127.0.0.1:5000/여기에 백엔드와 통신할 주소')
+        .then(response => {
+            setImageArray(response.data);
+        })
+        .catch(error => {
+            console.error("이미지 데이터 취득 에러:", error);
+        });
+}, []);
 
 const SizeScreen = ({ selectedImage, onCropComplete }) => {
     const imgRef = useRef(null);
     const previewCanvasRef = useRef(null);
     const [crop, setCrop] = useState();
     const [cropDetails, setCropDetails] = useState(null);
+    const [imageArray, setImageArray] = useState([]); // imageArray 에 백엔드에서 가져온 이미지 데이터를 저장하지만 아직 그걸 호출하는 코드는 없음(SelectedImageScreen컴포넌트에서 호출함)
 
     const onImageLoad = (e) => {
         const { width, height } = e.currentTarget;
