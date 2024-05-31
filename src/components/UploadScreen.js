@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { VStack, Button, Box, Image, useToast, Flex } from '@chakra-ui/react';
+import axios from 'axios';
 
-const UploadScreen = () => {
+const UploadScreen = ({ onSelectImage }) => {
     const [selectedImage, setSelectedImage] = useState(null);
-    const [resultImage, setResultImage] = useState(null);
     const toast = useToast();
 
     // 이미지 선택 시 호출되는 함수
@@ -19,33 +19,30 @@ const UploadScreen = () => {
     };
 
     const handleUpload = async () => {
-        if (selectedImage) {
-            const fileInput = document.getElementById('fileInput').files[0];
+        const fileInput = document.getElementById('fileInput');
+        if (fileInput.files.length > 0) {
+            const file = fileInput.files[0];
             const formData = new FormData();
-            formData.append('file', fileInput);
+            formData.append('file', file);
 
             try {
-                const response = await fetch('http://localhost:5000/upload', {
-                    method: 'POST',
-                    body: formData,
+                const response = await axios.post('http://127.0.0.1:5000/upload', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
                 });
-
-                if (!response.ok) {
-                    throw new Error('네트워크 응답이 정상이 아닙니다.');
-                }
-
-                const data = await response.json();
-                setResultImage(data.result_image);
                 toast({
-                    title: "이미지가 성공적으로 업로드되었습니다.",
+                    title: "파일 업로드 성공!",
                     status: "success",
                     duration: 2000,
                     isClosable: true,
                 });
+                onSelectImage(selectedImage);
+                console.log('File uploaded successfully', response.data);
             } catch (error) {
+                console.error('Error uploading file', error);
                 toast({
-                    title: "업로드 중 오류가 발생했습니다.",
-                    description: error.message,
+                    title: "파일 업로드 실패.",
                     status: "error",
                     duration: 2000,
                     isClosable: true,
@@ -64,7 +61,7 @@ const UploadScreen = () => {
     return (
         <Box h="100vh" bg="#EEEEEE">
             <VStack spacing={8} pt={20} w="100%" h="100%" align="center">
-                {/* 여기에 이 웹앱의 사용 방법을 표시 */}
+                {/* 여기에 이 웹앱의 사용 방식을 표시 */}
                 <Box w="95%" h="40%" fontSize={35}>
                     이 웹앱의 사용 방법을 설명하는 텍스트
                 </Box>
@@ -73,7 +70,7 @@ const UploadScreen = () => {
                     <Flex justify="space-between" w="100%">
                         <Box bg="#EEEEEE">
                             <VStack>
-                                {/*  보튼을 클릭하면 파일 선택 화면이 나타남 */}
+                                {/* 버튼을 클릭하면 파일 선택 화면이 나타남 */}
                                 <input type="file" id="fileInput" style={{ display: 'none' }} onChange={handleFileChange} />
                                 <label htmlFor="fileInput">
                                     <Button m={15} colorScheme="green" style={{ width: "200px", height: "60px" }} fontSize={24} as="span">
@@ -90,11 +87,6 @@ const UploadScreen = () => {
                         )}
                     </Flex>
                 </Box>
-                {resultImage && (
-                    <Box bg="#FFFFFF" p={8} h="45%" w="95%" borderRadius="xl" display="flex" alignItems="center" justifyContent="center">
-                        <Image src={`http://localhost:5000/uploads/${resultImage}`} alt="Result" maxH="300px" objectFit="contain" />
-                    </Box>
-                )}
             </VStack>
         </Box>
     );
