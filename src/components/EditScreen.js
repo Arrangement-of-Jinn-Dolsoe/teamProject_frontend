@@ -38,7 +38,7 @@ const EditScreen = ({ uploadedImage, croppedImage }) => {
                     {uploadedImage && <Image src={uploadedImage} alt="Uploaded" objectFit="contain" maxH="100%" maxW="100%" />}
                 </Box>
                 <Box bg="#FFFFFF" p={8} w="48%" borderRadius="xl" display="flex" alignItems="center" justifyContent="center">
-                    {croppedImage && <Image src={croppedImage} alt="Cropped" objectFit="contain" maxH="100%" maxW="100%" />}
+                    {/* 여기서 정리된 이미지를 표시 */}
                 </Box>
             </Flex>
             <Flex justify="space-between">

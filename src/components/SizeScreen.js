@@ -3,19 +3,20 @@ import React, { useState, useRef, useEffect } from 'react';
 import setCanvasPreview from "../setCanvasPreview";
 import ReactCrop, { centerCrop, convertToPixelCrop, makeAspectCrop } from "react-image-crop";
 import 'react-image-crop/dist/ReactCrop.css';
+import axios from 'axios';
+
 
 const MIN_DIMENSION = 150;
 
-useEffect(() => {
-    // 백엔드에서 이미지 데이터 배열을 가져옴
-    axios.get('http://127.0.0.1:5000/여기에 백엔드와 통신할 주소')
-        .then(response => {
-            setImageArray(response.data);
-        })
-        .catch(error => {
-            console.error("이미지 데이터 취득 에러:", error);
-        });
-}, []);
+const ImageGet = async () => {
+    try {
+        const response = await axios.get('http://127.0.0.1:5000/여기에 백엔드와 통신할 주소');
+        return response.data;
+    } catch (error) {
+        console.error("이미지 데이터 취득 에러:", error);
+        return [];
+    }
+};
 
 const SizeScreen = ({ selectedImage, onCropComplete }) => {
     const imgRef = useRef(null);
@@ -24,6 +25,15 @@ const SizeScreen = ({ selectedImage, onCropComplete }) => {
     const [cropDetails, setCropDetails] = useState(null);
     const [imageArray, setImageArray] = useState([]); // imageArray 에 백엔드에서 가져온 이미지 데이터를 저장하지만 아직 그걸 호출하는 코드는 없음(SelectedImageScreen컴포넌트에서 호출함)
 
+
+    useEffect(() => {
+        // ImageGet 함수를 호출하여 이미지 데이터를 가져옴
+        ImageGet().then(data => {
+            setImageArray(data);
+        });
+    }, []);
+
+    
     const onImageLoad = (e) => {
         const { width, height } = e.currentTarget;
         const cropWidthInPercent = (MIN_DIMENSION / width) * 100;
@@ -49,6 +59,7 @@ const SizeScreen = ({ selectedImage, onCropComplete }) => {
                 const images = ImageGet();
                 onCropComplete(url, images);
             }, 'image/png');
+            
 
             const cropWidth = Math.round(pixelCrop.width);
             const cropHeight = Math.round(pixelCrop.height);
