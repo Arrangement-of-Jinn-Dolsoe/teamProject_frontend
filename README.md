@@ -1,6 +1,5 @@
-git clone URL 
-
-cd teamProject_frontend-main/
+# 환경 구축
+teamProject_frontend 디렉토리에서 아래 코드 실행
 
 npm install @chakra-ui/react @emotion/react @emotion/styled framer-motion html-to-image
 
