@@ -11,9 +11,8 @@ const App = () => {
   const [screen, setScreen] = useState('upload');
   const [uploadedImage, setUploadedImage] = useState(null);
   const [measuredSize, setMeasuredSize] = useState(null);
-  const [selectedObjects, setSelectedObjects] = useState([]); // コメントアウト
-  const [croppedImage, setCroppedImage] = useState(null);
   const [imageList, setImageList] = useState([]);
+  const [organizedObject, setOrganizedObject] = useState(null);
 
   const handleSelectImage = (image) => {
     setUploadedImage(image);
@@ -25,13 +24,12 @@ const App = () => {
     setScreen('selectObject');
   };
 
-  const handleSelectObject = (objects) => {
-    setSelectedObjects(objects); // コメントアウト
+  const handleReceivedOrganizedImage = (objects) => {
+    setOrganizedObject(objects);
     setScreen('edit');
   };
 
-  const handleCropComplete = (croppedImageUrl, images) => {
-    setCroppedImage(croppedImageUrl);
+  const handleCropComplete = (images) => {
     setImageList(images);
     setScreen('selectObject');
   };
@@ -57,10 +55,10 @@ const App = () => {
         {screen === 'selectObject' && (
           <SelectObjectScreen
             selectedImages={imageList}
-            onSelectObject={handleSelectObject}
+            onSelectObject={handleReceivedOrganizedImage}
           />
         )}
-        {screen === 'edit' && <EditScreen uploadedImage={uploadedImage} selectedObjects={selectedObjects} croppedImage={croppedImage} />}
+        {screen === 'edit' && <EditScreen uploadedImage={uploadedImage} organizedObject={organizedObject} />}
       </Box>
     </ChakraProvider>
   );

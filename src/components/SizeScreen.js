@@ -1,16 +1,15 @@
-import { Button, Box, Image, VStack, Text,  } from '@chakra-ui/react';
+import { Button, Box, Image, VStack, Text } from '@chakra-ui/react';
 import React, { useState, useRef, useEffect } from 'react';
 import setCanvasPreview from "../setCanvasPreview";
 import ReactCrop, { centerCrop, convertToPixelCrop, makeAspectCrop } from "react-image-crop";
 import 'react-image-crop/dist/ReactCrop.css';
 import axios from 'axios';
 
-
 const MIN_DIMENSION = 150;
 
 const ImageGet = async () => {
     try {
-        const response = await axios.get('http://127.0.0.1:5000/여기에 백엔드와 통신할 주소');
+        const response = await axios.get('http://127.0.0.1:5000/separatedImages');
         return response.data;
     } catch (error) {
         console.error("이미지 데이터 취득 에러:", error);
@@ -22,18 +21,15 @@ const SizeScreen = ({ selectedImage, onCropComplete }) => {
     const imgRef = useRef(null);
     const previewCanvasRef = useRef(null);
     const [crop, setCrop] = useState();
-    const [cropDetails, setCropDetails] = useState(null);
-    const [imageArray, setImageArray] = useState([]); // imageArray 에 백엔드에서 가져온 이미지 데이터를 저장하지만 아직 그걸 호출하는 코드는 없음(SelectedImageScreen컴포넌트에서 호출함)
-
+    const [cropDetails, setCropDetails] = useState([]);
+    const [imageArray, setImageArray] = useState([]);
 
     useEffect(() => {
-        // ImageGet 함수를 호출하여 이미지 데이터를 가져옴
         ImageGet().then(data => {
             setImageArray(data);
         });
     }, []);
 
-    
     const onImageLoad = (e) => {
         const { width, height } = e.currentTarget;
         const cropWidthInPercent = (MIN_DIMENSION / width) * 100;
@@ -49,40 +45,43 @@ const SizeScreen = ({ selectedImage, onCropComplete }) => {
         setCrop(centeredCrop);
     };
 
-    const completeCrop = () => {
+    const completeCrop = async () => {
         if (imgRef.current && previewCanvasRef.current && crop) {
             const pixelCrop = convertToPixelCrop(crop, imgRef.current.naturalWidth, imgRef.current.naturalHeight);
             setCanvasPreview(imgRef.current, previewCanvasRef.current, pixelCrop);
-            const canvas = previewCanvasRef.current;
-            canvas.toBlob(blob => {
-                const url = URL.createObjectURL(blob);
-                const images = ImageGet();
-                onCropComplete(url, images);
-            }, 'image/png');
-            
 
             const cropWidth = Math.round(pixelCrop.width);
             const cropHeight = Math.round(pixelCrop.height);
             const cropX = Math.round(pixelCrop.x);
             const cropY = Math.round(pixelCrop.y);
-            const imgWidth = imgRef.current.naturalWidth;
-            const imgHeight = imgRef.current.naturalHeight;
 
-
-            // 왼쪽 상단 (x1, y1)
             const x1 = cropX;
             const y1 = cropY;
-
-            // 오른쪽 하단 (x2, y2)
             const x2 = cropX + cropWidth;
             const y2 = cropY + cropHeight;
 
-            setCropDetails({
-                width: cropWidth,
-                height: cropHeight,
-                coordinates: [x1, y1, x2, y2],
-                imgSize: `${imgWidth}x${imgHeight}`
-            });
+            setCropDetails([x1, y1, x2, y2]);
+
+            const formData = new FormData();
+            formData.append('x1', x1);
+            formData.append('y1', y1);
+            formData.append('x2', x2);
+            formData.append('y2', y2);
+
+            try {
+                const response = await axios.post('http://127.0.0.1:5000/coordinateData', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
+                console.log('Crop details uploaded successfully', response.data);
+
+                const images = await ImageGet();
+                setImageArray(images);
+                onCropComplete(images);
+            } catch (error) {
+                console.error('Error uploading crop details', error);
+            }
         }
     };
 
@@ -113,15 +112,13 @@ const SizeScreen = ({ selectedImage, onCropComplete }) => {
                 </Button>
                 <Box as="canvas" ref={previewCanvasRef} mt={4} border="1px solid black" width={200} height={200} display="block" mx="auto" />
             </Box>
-            {cropDetails && (
+            {cropDetails.length > 0 && (
                 <Box float="right" width="45%" p={4} bg="#FFFFFF" borderRadius="xl">
                     <VStack align="start" spacing={4}>
-                    <Text fontSize="xl">Crop한 정보:</Text>
-                        <Text>픽셀: {cropDetails.width}x{cropDetails.height} </Text>
-                        <Text>자표: [{cropDetails.coordinates.join(", ")}]</Text>
-                        <Text>원본 이미지 사이즈: {cropDetails.imgSize}</Text>
+                        <Text fontSize="xl">Crop한 좌표:</Text>
+                        <Text>좌표: [{cropDetails.join(", ")}]</Text>
                     </VStack>
-                    </Box>
+                </Box>
             )}
         </Box>
     );
