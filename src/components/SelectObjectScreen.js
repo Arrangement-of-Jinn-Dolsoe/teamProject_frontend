@@ -5,7 +5,7 @@ import axios from 'axios';
 const SelectObjectScreen = ({ selectedImages, onSelectObject }) => {
     const [selectingList, setSelectingList] = useState([]);
     const [excludedList, setExcludedList] = useState([]);
-    const [organizedImage, setOrganizedImage] = useState(null);　// 여기에 백엔드에서 받은 이미지 데이터를 저장
+    const [organizedImage, setOrganizedImage] = useState(null);
 
     useEffect(() => {
         setSelectingList(selectedImages);
@@ -24,23 +24,30 @@ const SelectObjectScreen = ({ selectedImages, onSelectObject }) => {
     };
 
     const handlOrganization = async () => {
+        const formData = new FormData();
+        selectingList.forEach((image, index) => {
+            formData.append(`image${index}`, image);
+        });
+
         try {
-            const response = await axios.post('http://127.0.0.1:5000/여기에 백엔드와 통신할 주소', {
-                images: selectingList,
-            }, {
-                responseType: 'blob', // blob데이터로 받음
+            const response = await axios.post('http://127.0.0.1:5000/organize', formData, { // organize API 호출
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+                responseType: 'blob',
             });
 
             const blob = new Blob([response.data], { type: 'image/png' });
             const imageUrl = URL.createObjectURL(blob);
             setOrganizedImage(imageUrl);
 
-            onSelectObject(selectingList); // 화면 전환을 위해 선택된 이미지 목록을 전달. 근데 이건 organizedImage로 대체하는 것이 좋다...?
+            if (imageUrl) {
+                onSelectObject(imageUrl);
+            }
         } catch (error) {
             console.error("Error processing images:", error);
         }
     };
-
 
     return (
         <Box>

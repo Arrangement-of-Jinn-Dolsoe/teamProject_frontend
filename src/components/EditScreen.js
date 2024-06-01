@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { Box, Button, Flex, Text, Image } from '@chakra-ui/react';
 import { toPng } from 'html-to-image';
 
-const EditScreen = ({ uploadedImage, croppedImage }) => {
+const EditScreen = ({ uploadedImage, organizedObject }) => {
     const screenshotRef = useRef(null);
 
     const handleDownload = () => {
@@ -38,7 +38,7 @@ const EditScreen = ({ uploadedImage, croppedImage }) => {
                     {uploadedImage && <Image src={uploadedImage} alt="Uploaded" objectFit="contain" maxH="100%" maxW="100%" />}
                 </Box>
                 <Box bg="#FFFFFF" p={8} w="48%" borderRadius="xl" display="flex" alignItems="center" justifyContent="center">
-                    {/* 여기서 정리된 이미지를 표시 */}
+                    {organizedObject && <Image src={organizedObject} alt="Organized" objectFit="contain" maxH="100%" maxW="100%" />}
                 </Box>
             </Flex>
             <Flex justify="space-between">
