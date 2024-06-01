@@ -2,6 +2,7 @@
 teamProject_frontend 디렉토리에서 아래 코드 실행
 
 npm install @chakra-ui/react @emotion/react @emotion/styled framer-motion html-to-image
+npm start
 
 
 # Getting Started with Create React App
