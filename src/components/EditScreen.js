@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { Box, Button, Flex, Text, Image } from '@chakra-ui/react';
 import { toPng } from 'html-to-image';
 
-const EditScreen = ({ uploadedImage, organizedObject }) => {
+const EditScreen = ({ uploadedImage, croppedImage, resultImage }) => {
     const screenshotRef = useRef(null);
 
     const handleDownload = () => {
@@ -38,7 +38,7 @@ const EditScreen = ({ uploadedImage, organizedObject }) => {
                     {uploadedImage && <Image src={uploadedImage} alt="Uploaded" objectFit="contain" maxH="100%" maxW="100%" />}
                 </Box>
                 <Box bg="#FFFFFF" p={8} w="48%" borderRadius="xl" display="flex" alignItems="center" justifyContent="center">
-                    {organizedObject && <Image src={organizedObject} alt="Organized" objectFit="contain" maxH="100%" maxW="100%" />}
+                    {resultImage && <Image src={`http://127.0.0.1:5000/result/${resultImage}`} alt="Result" objectFit="contain" maxH="100%" maxW="100%" />}
                 </Box>
             </Flex>
             <Flex justify="space-between">
