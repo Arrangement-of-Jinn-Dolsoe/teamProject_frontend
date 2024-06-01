@@ -1,3 +1,10 @@
+git clone URL 
+
+cd teamProject_frontend-main/
+
+npm install @chakra-ui/react @emotion/react @emotion/styled framer-motion html-to-image
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
