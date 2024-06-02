@@ -8,17 +8,19 @@ import { LayoutGroup } from 'framer-motion';
 
 const MIN_DIMENSION = 150;
 
+// 선반 사이즈를 재기 위한 화면을 표시하는 컴포넌트
 const SizeScreen = ({ selectedImage, onSelectSize }) => {
-  const imgRef = useRef(null);
-  const previewCanvasRef = useRef(null);
-  const [crop, setCrop] = useState();
-  const [cropDetails, setCropDetails] = useState(null);
-  const [imageArray, setImageArray] = useState([]);
+  const imgRef = useRef(null); // 이미지를 참조하기 위한 ref
+  const previewCanvasRef = useRef(null); // 이미지를 Preview 하기 위한 ref
+  const [crop, setCrop] = useState(); // 이미지를 Crop하기 위한 상태변수
+  const [cropDetails, setCropDetails] = useState(null); // 백엔드에 보내는 Crop한 이미지의 정보를 저장하는 상태변수
+  const [imageArray, setImageArray] = useState([]); // SelectObjectScreen에 보내는 백엔드에서 가져온 이미지 데이터를 저장하는 상태변수
 
   useEffect(() => {
     // 백엔드에서 이미지 데이터 배열을 가져옴
     axios.get('http://127.0.0.1:5000/get-shelf-images')
       .then(response => {
+        // 이미지 데이터 배열을 setImageArray함수를 사용해서 상태변수 imageArray 를 갱신해서 저장한다.
         setImageArray(response.data);
       })
       .catch(error => {
@@ -26,8 +28,9 @@ const SizeScreen = ({ selectedImage, onSelectSize }) => {
       });
   }, []);
 
+  // 이미지가 로드되면 실행되는 함수.
   const onImageLoad = (e) => {
-    const { width, height } = e.currentTarget;
+    const { width, height } = e.currentTarget;  // 이미지의 너비와 높이를 가져온다.
     console.log("width", width, "height", height);
     const cropWidthInPercent = (MIN_DIMENSION / width) * 100;
     const initialCrop = makeAspectCrop(
@@ -42,13 +45,17 @@ const SizeScreen = ({ selectedImage, onSelectSize }) => {
     setCrop(centeredCrop);
   };
 
+  // 사이즈 재기 완료 버튼을 클릭하면 실행되는 함수.
   const completeCrop = async () => {
+    // 이미지가 로드되었고, Cropping된 이미지가 있을 때 실행
     if (imgRef.current && previewCanvasRef.current && crop) {
       // const pixelCrop = convertToPixelCrop(crop, imgRef.current.naturalWidth, imgRef.current.naturalHeight);
       const pixelCrop = convertToPercentCrop(crop, imgRef.current.naturalWidth, imgRef.current.naturalHeight);
       console.log('pixelCrop:', pixelCrop);
+      // 이미지를 Preview 하기 위한 함수
       setCanvasPreview(imgRef.current, previewCanvasRef.current, pixelCrop);
 
+      // 아래 변수들은 트리밍된 이미지의 너비, 높이, x, y 좌표를 저장한다.
       const cropWidth = Math.round(pixelCrop.width);
       const cropHeight = Math.round(pixelCrop.height);
       const cropX = Math.round(pixelCrop.x);
@@ -64,6 +71,7 @@ const SizeScreen = ({ selectedImage, onSelectSize }) => {
       const x2 = cropX + cropWidth;
       const y2 = cropY + cropHeight;
 
+      // 백엔드에 보내기 위해 좌표를 아래 형태의 배열로 저장
       var coordinates = [x1, y1, x2, y2];
 
       setCropDetails({
@@ -104,15 +112,18 @@ const SizeScreen = ({ selectedImage, onSelectSize }) => {
   };
   console.log('cropDetails:', cropDetails);
 
+  // 보디부분의 화면을 구성하는 컴포넌트를 반환한다.
   return (
     <LayoutGroup>
       <Box bg="#FFFFFF" p={8} w="100%" borderRadius="xl" alignItems="center" justifyContent="center">
+        {/*  react-image-crop 라이브러리의 이미지를 Crop하기 위한 ReactCrop 컴포넌트를 사용한다. */}
         <ReactCrop
-          crop={crop}
-          onChange={(newCrop) => setCrop(newCrop)}
+          crop={crop} // Crop한 이미지의 정보를 저장하는 상태변수
+          onChange={(newCrop) => setCrop(newCrop)} // Crop한 이미지의 정보를 갱신하는 함수
           keepSelection
-          minWidth={MIN_DIMENSION}
+          minWidth={MIN_DIMENSION} // Crop할 이미지의 최소 너비(설정하지 않아도 됨)
         >
+          {/* 이미지를 Crop하기 위한 이미지를 표시한다. */}
           <Image
           src={selectedImage}
           ref={imgRef}
@@ -120,18 +131,21 @@ const SizeScreen = ({ selectedImage, onSelectSize }) => {
           objectFit="contain"
           maxH="100%"
           maxW="100%"
+          // 이미지가 로드되면 onImageLoad 함수를 실행한다.
           onLoad={onImageLoad}
           ></Image>
         </ReactCrop>
       </Box>
-
+      {/* 사이즈 재기 완료 버튼을 클릭하면 completeCrop 함수를 실행한다. */}
       <Button onClick={completeCrop} mt={4}>
         사이즈 재기 완료
       </Button>
+      {/* 이미지를 Preview하기 위한 부분이다. Preview하는 기능은 없애도 됨.*/}
       <Box as="canvas" ref={previewCanvasRef} mt={4} border="1px solid black" width={200} height={200} display="block" mx="auto" />
     {cropDetails && (
       <Box float="right" width="45%" p={4} bg="#FFFFFF" borderRadius="xl">
         <VStack align="start" spacing={4}>
+          {/* 개발자가 확인하기 위한 Crop한 이미지의 정보를 표시한다. 유저는 안 보임*/}
           <Text fontSize="xl">Crop한 정보:</Text>
           <Text>픽셀: {cropDetails.width}x{cropDetails.height}</Text>
           <Text>좌표: [{cropDetails.coordinates.join(", ")}]</Text>
