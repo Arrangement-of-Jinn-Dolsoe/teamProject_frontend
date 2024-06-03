@@ -1,3 +1,4 @@
+from typing import List
 import cv2
 import cv2.typing
 from YoloObject import YoloObject
@@ -73,3 +74,8 @@ class Shelf:
             return True
         else:
             return False
+
+
+def create_shelf_list() -> List[Shelf]:
+    """Shelf 클래스의 빈 리스트를 만드는 함수"""
+    return list()

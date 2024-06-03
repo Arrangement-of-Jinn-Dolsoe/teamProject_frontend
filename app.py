@@ -1,29 +1,17 @@
-from typing import List
 from flask import Flask, request, jsonify, send_from_directory
 from ultralytics import YOLO
 import os
 import cv2
 from flask_cors import CORS, cross_origin
 import uuid
-from Shelf import Shelf  # Shelf 클래스를 가져온다.
-from YoloObject import YoloObject  # YoloObject 클래스를 가져온다.
+from Shelf import Shelf, create_shelf_list  # Shelf의 관한 모듈을 가져온다.
+from YoloObject import YoloObject, create_yolo_list  # YoloObject의 관한 모듈을 가져온다.
 
 app = Flask(__name__)  # Flask 앱 생성
 CORS(app, resources={r"/*": {"origins": "*"}})  # CORS 설정
 
 # YOLO 모델 로드
 model = YOLO('yolov8x-seg.pt')
-
-
-def create_shelf_list() -> List[Shelf]:
-    """Shelf 클래스의 빈 리스트를 만드는 함수"""
-    return list()
-
-
-def create_yolo_list() -> List[YoloObject]:
-    """YoloObject 클래스의 빈 리스트를 만드는 함수"""
-    return list()
-
 
 shelf_objects = create_shelf_list()  # 선반 객체를 저장할 리스트
 yolo_objects = create_yolo_list()  # 탐지된 객체를 저장할 리스트

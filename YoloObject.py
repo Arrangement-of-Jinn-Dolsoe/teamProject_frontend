@@ -1,3 +1,4 @@
+from typing import List
 import cv2
 import cv2.typing
 
@@ -24,3 +25,8 @@ class YoloObject:
         cv2.imshow("Object", self.image)
         cv2.waitKey(1)
         cv2.destroyAllWindows()
+
+
+def create_yolo_list() -> List[YoloObject]:
+    """YoloObject 클래스의 빈 리스트를 만드는 함수"""
+    return list()
