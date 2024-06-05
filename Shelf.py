@@ -26,7 +26,7 @@ class Shelf:
     def __str__(self):
         return f'x1: {self.x1}, y1: {self.y1}, x2: {self.x2}, y2: {self.y2}'
 
-    def __check_placement(self, obj: YoloObject) -> bool:
+    def check_placement(self, obj: YoloObject) -> bool:
         # 물체의 너비와 높이가 남는 공간보다 작거나 같으면
         if obj.width <= self.width - self.index and obj.height <= self.height:
             return True
@@ -54,7 +54,7 @@ class Shelf:
                             image: cv2.typing.MatLike,
                             obj: YoloObject) -> bool:
         # 물체를 선반에 추가한다.
-        if self.__check_placement(obj):
+        if self.check_placement(obj):
             좌측상단x, 좌측상단y, 우측하단x, 우측하단y = self.__check_position(obj)
             """
             필요 없어 보이는 코드 같아요
