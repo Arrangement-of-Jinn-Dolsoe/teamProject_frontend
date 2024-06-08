@@ -30,6 +30,17 @@ class MyYOLOApp():
         """
         self.shelf_objects.append(Shelf(x1, y1, x2, y2))
 
+    def get_detected_image_names(self):
+        """
+        탐지된 객체의 이미지 이름을 가져온다.
+        """
+        # image_names = [os.path.basename(obj.image_path) for obj in self.yolo_objects]
+        image_names = list()  # 이미지 이름을 저장할 리스트
+        for obj in self.yolo_objects:
+            # 이미지 경로에서 파일 이름만 가져와서 리스트에 추가한다.
+            image_names.append(os.path.basename(obj.image_path))
+        return image_names
+
     def cut_image(self):
         """
         객체를 탐지하여 자르고

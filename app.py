@@ -85,8 +85,8 @@ def serve_result_file(filename):
 @app.route('/get-shelf-images', methods=['GET'])
 @cross_origin()
 def get_shelf_images():
-    images = [os.path.basename(obj.image_path) for obj in yolo_app.yolo_objects]
-    return jsonify(images)
+    image_names = yolo_app.get_detected_image_names()
+    return jsonify(image_names)
 
 
 @app.route('/upload-shelf/<path:filename>', methods=['GET'])
