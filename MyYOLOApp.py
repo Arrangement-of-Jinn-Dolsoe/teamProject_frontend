@@ -67,7 +67,7 @@ class MyYOLOApp():
             # uuid를 사용하여 중복되지 않는 파일 이름 생성
             img_filename = f"detected_{uuid.uuid4().hex}.jpg"
 
-            img_path = os.path.join('upload-shelf', img_filename)
+            img_path = os.path.join('detected-object-images', img_filename)
             os.makedirs(os.path.dirname(img_path), exist_ok=True)  # 폴더가 없으면 생성
             cv2.imwrite(img_path, cropped_img)  # 이미지 저장
             self.yolo_objects.append(
@@ -130,7 +130,7 @@ class MyYOLOApp():
         """
         for excluded_image in excluded_images:
             self.yolo_objects[:] = [obj for obj in self.yolo_objects if not os.path.basename(obj.image_path) == excluded_image]
-            image_path = os.path.join('upload-shelf', excluded_image)
+            image_path = os.path.join('detected-object-images', excluded_image)
             if os.path.exists(image_path):
                 os.remove(image_path)
         return "제외된 이미지를 삭제했습니다."

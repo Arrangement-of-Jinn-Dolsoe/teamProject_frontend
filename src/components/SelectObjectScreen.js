@@ -66,7 +66,7 @@ const SelectObjectScreen = ({ selectedImages, onSelectObject }) => {
                     {selectingList.map((image, index) => (
                         <Image
                             key={index}
-                            src={`http://127.0.0.1:5000/upload-shelf/${image}`}  // 이미지 경로 설정
+                            src={`http://127.0.0.1:5000/detected-object-images/${image}`}  // 이미지 경로 설정
                             alt={`Selected ${index}`}
                             onClick={() => handleSelectImage(index)}
                             boxSize="150px"
@@ -83,7 +83,7 @@ const SelectObjectScreen = ({ selectedImages, onSelectObject }) => {
                     {excludedList.map((image, index) => (
                         <Image
                             key={index}
-                            src={`http://127.0.0.1:5000/upload-shelf/${image}`}  // 이미지 경로 설정
+                            src={`http://127.0.0.1:5000/detected-object-images/${image}`}  // 이미지 경로 설정
                             alt={`Excluded ${index}`}
                             onClick={() => handleExcludeImage(index)}
                             boxSize="150px"

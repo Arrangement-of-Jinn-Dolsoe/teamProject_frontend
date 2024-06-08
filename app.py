@@ -40,7 +40,8 @@ def upload_file():
         return json_data
 
 
-@app.route('/upload-shelf', methods=['POST', 'OPTIONS'])
+# 선반의 좌표를 추가하는 엔드포인트
+@app.route('/add-shelf-coordinates', methods=['POST', 'OPTIONS'])
 @cross_origin()
 def upload_shelf():
     if request.method == 'OPTIONS':
@@ -82,17 +83,17 @@ def serve_result_file(filename):
     return send_from_directory('result', filename)
 
 
-@app.route('/get-shelf-images', methods=['GET'])
+@app.route('/get-yolo-images', methods=['GET'])
 @cross_origin()
 def get_shelf_images():
     image_names = yolo_app.get_detected_image_names()
     return jsonify(image_names)
 
 
-@app.route('/upload-shelf/<path:filename>', methods=['GET'])
+@app.route('/detected-object-images/<path:filename>', methods=['GET'])
 @cross_origin()
 def serve_file(filename):
-    return send_from_directory('upload-shelf', filename)
+    return send_from_directory('detected-object-images', filename)
 
 
 @app.route('/update-objects', methods=['POST'])
