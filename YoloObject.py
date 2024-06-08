@@ -20,6 +20,7 @@ class YoloObject:
         self.image_path: str = image_path
         self.width: int = width
         self.height: int = height
+        self.appended = False
 
     def show(self):
         cv2.imshow("Object", self.image)
