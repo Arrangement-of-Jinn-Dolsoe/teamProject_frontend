@@ -112,3 +112,14 @@ class MyYOLOApp():
         # endregion
 
         return image
+
+    def remove_objects(self, excluded_images: list):
+        """
+        제외된 이미지를 삭제한다.
+        """
+        for excluded_image in excluded_images:
+            self.yolo_objects[:] = [obj for obj in self.yolo_objects if not os.path.basename(obj.image_path) == excluded_image]
+            image_path = os.path.join('upload-shelf', excluded_image)
+            if os.path.exists(image_path):
+                os.remove(image_path)
+        return "제외된 이미지를 삭제했습니다."

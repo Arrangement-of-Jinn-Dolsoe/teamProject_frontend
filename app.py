@@ -100,20 +100,16 @@ def serve_file(filename):
 def update_objects():
     """
     제외된 이미지를 받아서 yolo_objects에서 제외한다.
-    미구현??
     """
     data = request.json
-    excluded_images = data.get('excluded_images', [])
-    print(f"제외된 이미지: {excluded_images}")
+    excluded_images = data.get('excludedImages', [])
+    for image in excluded_images:
+        print(f"제외된 이미지: {image}")
 
     # 제외된 이미지와 일치하는 yolo_objects를 삭제
-    for excluded_image in excluded_images:
-        yolo_app.yolo_objects[:] = [obj for obj in yolo_app.yolo_objects if not os.path.basename(obj.image_path) == excluded_image]
-        image_path = os.path.join('upload-shelf', excluded_image)
-        if os.path.exists(image_path):
-            os.remove(image_path)
+    message = yolo_app.remove_objects(excluded_images)
 
-    return jsonify({"message": "YOLO 객체 업데이트 완료"}), 200
+    return jsonify({"message": message}), 200
 
 
 def main():
