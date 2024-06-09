@@ -30,8 +30,30 @@ const SelectObjectScreen = ({ selectedImages, onSelectObject }) => {
     };
 
     // 유저가 선택한 이미지의 배열을 부모 컴포넌트인 App 컴포넌트로 보내는 함수.
-    const handleOrganization = () => {
+    const handleOrganization = async () => {
         onSelectObject(selectingList);
+        // 선택된 이미지 리스트를 콘솔에 출력한다.
+        console.log("selectingList:", selectingList);
+
+        // 제외된 이미지 주소 리스트를 백엔드에 보내는 코드
+        try {
+            const response = await fetch('http://127.0.0.1:5000/update-objects', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ excludedImages: excludedList }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const data = await response.json();
+            console.log('Success:', data);
+        } catch (error) {
+            console.error('Error:', error);
+        }
     };
 
     // 보디부분의 화면을 구성하는 컴포넌트를 반환한다.
@@ -44,7 +66,7 @@ const SelectObjectScreen = ({ selectedImages, onSelectObject }) => {
                     {selectingList.map((image, index) => (
                         <Image
                             key={index}
-                            src={`http://127.0.0.1:5000/upload-shelf/${image}`}  // 이미지 경로 설정
+                            src={`http://127.0.0.1:5000/detected-object-images/${image}`}  // 이미지 경로 설정
                             alt={`Selected ${index}`}
                             onClick={() => handleSelectImage(index)}
                             boxSize="150px"
@@ -61,7 +83,7 @@ const SelectObjectScreen = ({ selectedImages, onSelectObject }) => {
                     {excludedList.map((image, index) => (
                         <Image
                             key={index}
-                            src={`http://127.0.0.1:5000/upload-shelf/${image}`}  // 이미지 경로 설정
+                            src={`http://127.0.0.1:5000/detected-object-images/${image}`}  // 이미지 경로 설정
                             alt={`Excluded ${index}`}
                             onClick={() => handleExcludeImage(index)}
                             boxSize="150px"

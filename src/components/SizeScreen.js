@@ -18,7 +18,7 @@ const SizeScreen = ({ selectedImage, onSelectSize }) => {
 
   useEffect(() => {
     // 백엔드에서 이미지 데이터 배열을 가져옴
-    axios.get('http://127.0.0.1:5000/get-shelf-images')
+    axios.get('http://127.0.0.1:5000/get-yolo-images')
       .then(response => {
         // 이미지 데이터 배열을 setImageArray함수를 사용해서 상태변수 imageArray 를 갱신해서 저장한다.
         setImageArray(response.data);
@@ -102,7 +102,7 @@ const SizeScreen = ({ selectedImage, onSelectSize }) => {
 
       // 선반 좌표를 서버로 전송
       try {
-        const response = await axios.post('http://127.0.0.1:5000/upload-shelf', { coordinates });
+        const response = await axios.post('http://127.0.0.1:5000/add-shelf-coordinates', { coordinates });
         console.log('서버 응답:', response.data);
         onSelectSize(coordinates, imageArray); // 선반 좌표와 이미지를 전달
       } catch (error) {
